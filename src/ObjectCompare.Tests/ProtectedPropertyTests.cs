@@ -10,7 +10,7 @@ namespace ObjectCompare.Tests
         {
             ObjectComparer.Settings = new ObjectComparerSettings
             {
-                PrivateProperties = true,
+                ProtectedProperties = true,
                 PublicProperties = false,
             };
         }

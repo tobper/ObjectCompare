@@ -11,7 +11,6 @@ namespace ObjectCompare.Tests
         {
             ObjectComparer.Settings = new ObjectComparerSettings
             {
-                PrivateProperties = false,
                 PublicProperties = false,
                 PrivateFields = true
             };

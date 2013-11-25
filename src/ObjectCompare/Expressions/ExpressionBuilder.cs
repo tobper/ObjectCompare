@@ -181,7 +181,7 @@ namespace ObjectCompare.Expressions
                 let isPrivate = !isPublic
                 where
                     (isPublic && context.Settings.PublicProperties) ||
-                    (isPrivate && context.Settings.PrivateProperties)
+                    (isPrivate && context.Settings.ProtectedProperties)
                 select  property;
 
             return properties.ToArray();
