@@ -129,6 +129,9 @@ namespace ObjectCompare.Expressions
             ParameterExpression object1,
             ParameterExpression object2)
         {
+            if (context.Settings.UseEquatable == false)
+                return null;
+
             var objectType = objectTypeInfo.AsType();
             var equatable = typeof(IEquatable<>).MakeGenericType(objectType);
 

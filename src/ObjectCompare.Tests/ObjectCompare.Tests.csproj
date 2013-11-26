@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BackReferenceTests.cs" />
+    <Compile Include="EquatableTests.cs" />
     <Compile Include="Types\Foo.cs" />
     <Compile Include="NullTests.cs" />
     <Compile Include="PrivateFieldTests.cs" />
