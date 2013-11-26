@@ -10,7 +10,6 @@
         }
 
         public bool PrivateFields { get; set; }
-        public bool PublicFields { get; set; }
         public bool ProtectedProperties { get; set; }
         public bool PublicProperties { get; set; }
         public bool UseEquatable { get; set; }

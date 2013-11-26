@@ -196,11 +196,7 @@ namespace ObjectCompare.Expressions
         {
             var fields =
                 from field in objectType.DeclaredFields
-                let isPublic = field.IsPublic
-                let isPrivate = !isPublic
-                where
-                    (isPublic && context.Settings.PublicFields) ||
-                    (isPrivate && context.Settings.PrivateFields)
+                where field.IsPrivate && context.Settings.PrivateFields
                 select field;
 
             return fields.ToArray();
