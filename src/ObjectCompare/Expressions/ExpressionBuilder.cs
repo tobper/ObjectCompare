@@ -69,11 +69,13 @@ namespace ObjectCompare.Expressions
             ParameterExpression object1,
             ParameterExpression object2)
         {
-            Expression statements =
+            Expression compare =
                 CompareEquatables(context, objectTypeInfo, object1, object2) ??
+                CompareCollections(context, objectTypeInfo, object1, object2) ??
+                CompareEnumerables(context, objectTypeInfo, object1, object2) ??
                 CompareMembers(context, objectTypeInfo, object1, object2);
 
-            if (statements == null)
+            if (compare == null)
                 return Expression.Empty();
 
             var objectPair = typeof(ObjectPair).AsVariable("objectPair");
@@ -103,7 +105,7 @@ namespace ObjectCompare.Expressions
                                     // visitedObjects.Add(objectPair)
                                     AddObjectPairToVisitedObjects(context, objectPair),
                                     // Compare...
-                                    statements)))));
+                                    compare)))));
         }
 
         private static Expression AssignNewObjectPairToVariable(ParameterExpression objectPair, ParameterExpression object1, ParameterExpression object2)
@@ -129,20 +131,82 @@ namespace ObjectCompare.Expressions
             ParameterExpression object1,
             ParameterExpression object2)
         {
-            if (context.Settings.UseEquatable == false)
-                return null;
+            if (context.Settings.UseEquatable)
+            {
+                var objectType = objectTypeInfo.AsType();
+                var equatableType = typeof(IEquatable<>).MakeGenericType(objectType);
 
-            var objectType = objectTypeInfo.AsType();
-            var equatable = typeof(IEquatable<>).MakeGenericType(objectType);
+                if (SupportsInterface(objectTypeInfo, equatableType))
+                {
+                    var equalsMethod = equatableType.GetRuntimeMethod("Equals", new[] { objectType });
+                    var objectsAreEqual = equalsMethod.AsInstanceCall(object1, object2);
+                    var objectsAreNotEqual = objectsAreEqual.IsFalse();
 
-            if (!objectTypeInfo.ImplementedInterfaces.Contains(equatable))
-                return null;
+                    return Expression.IfThen(objectsAreNotEqual, context.ReturnFalse);
+                }
+            }
 
-            var equalsMethod = equatable.GetRuntimeMethod("Equals", new[] { objectType });
-            var objectsAreEqual = equalsMethod.AsInstanceCall(object1, object2);
-            var objectsAreNotEqual = objectsAreEqual.IsFalse();
+            return null;
+        }
 
-            return Expression.IfThen(objectsAreNotEqual, context.ReturnFalse);
+        private static Expression CompareCollections(
+            ExpressionBuilderContext context,
+            TypeInfo objectTypeInfo,
+            ParameterExpression object1,
+            ParameterExpression object2)
+        {
+            var collectionType = typeof(ICollection<>);
+            var genericInterface = GetGenericInterface(objectTypeInfo, collectionType);
+
+            if (genericInterface != null)
+            {
+                var call = typeof(CompiledObjectComparer<>).
+                    MakeGenericType(genericInterface.GenericTypeArguments[0]).
+                    GetTypeInfo().
+                    DeclaredMethods.Single(m => m.Name == "CollectionEquals").
+                    AsCall(object1, object2, context.VisitedObjects);
+
+                return Expression.IfThen(call.IsFalse(), context.ReturnFalse);
+            }
+
+            return null;
+        }
+
+        private static Expression CompareEnumerables(
+            ExpressionBuilderContext context,
+            TypeInfo objectTypeInfo,
+            ParameterExpression object1,
+            ParameterExpression object2)
+        {
+            var enumerableType = typeof(IEnumerable<>);
+            var genericInterface = GetGenericInterface(objectTypeInfo, enumerableType);
+
+            if (genericInterface != null)
+            {
+                var call = typeof(CompiledObjectComparer<>).
+                    MakeGenericType(genericInterface.GenericTypeArguments[0]).
+                    GetTypeInfo().
+                    DeclaredMethods.Single(m => m.Name == "EnumerableEquals").
+                    AsCall(object1, object2, context.VisitedObjects);
+
+                return Expression.IfThen(call.IsFalse(), context.ReturnFalse);
+            }
+
+            return null;
+        }
+
+        private static Type GetGenericInterface(TypeInfo objectTypeInfo, Type typeDefinition)
+        {
+            var types = objectTypeInfo.ImplementedInterfaces.ToList();
+            types.Add(objectTypeInfo.AsType());
+
+            var interfaces =
+                from iface in types
+                where iface.IsConstructedGenericType
+                where iface.GetGenericTypeDefinition() == typeDefinition
+                select iface;
+
+            return interfaces.FirstOrDefault();
         }
 
         private static Expression CompareMembers(
@@ -268,8 +332,20 @@ namespace ObjectCompare.Expressions
             ParameterExpression child1,
             ParameterExpression child2)
         {
-            return GetCompiledEqualsMethod(childType).
+            var call = typeof(CompiledObjectComparer<>).
+                MakeGenericType(childType).
+                GetTypeInfo().
+                DeclaredMethods.Single(m => m.Name == "Equals" && m.GetParameters().Length == 3).
                 AsCall(child1, child2, context.VisitedObjects);
+
+            return Expression.IfThen(call.IsFalse(), context.ReturnFalse);
+        }
+
+        private static bool SupportsInterface(TypeInfo type, Type iface)
+        {
+            return
+                type.AsType() == iface ||
+                type.ImplementedInterfaces.Contains(iface);
         }
 
         private static MethodInfo GetReferenceEqualsMethod()
@@ -298,14 +374,6 @@ namespace ObjectCompare.Expressions
             return typeof(HashSet<ObjectPair>).
                 GetTypeInfo().
                 DeclaredMethods.Single(m => m.Name == "Add");
-        }
-
-        public static MethodInfo GetCompiledEqualsMethod(Type objectType)
-        {
-            return typeof(CompiledObjectComparer<>).
-                MakeGenericType(objectType).
-                GetTypeInfo().
-                DeclaredMethods.Single(m => m.Name == "Equals" && m.GetParameters().Count() == 3);
         }
     }
 }

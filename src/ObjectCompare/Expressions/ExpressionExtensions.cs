@@ -48,6 +48,16 @@ namespace ObjectCompare.Expressions
             return Expression.Block(variables, expressions);
         }
 
+        public static LoopExpression AsLoop(this Expression expression)
+        {
+            return Expression.Loop(expression);
+        }
+
+        public static LoopExpression AsLoop(this Expression expression, LabelTarget breakTarget)
+        {
+            return Expression.Loop(expression, breakTarget);
+        }
+
         public static ParameterExpression AsParameter(this Type type)
         {
             return Expression.Parameter(type);
@@ -66,6 +76,11 @@ namespace ObjectCompare.Expressions
         public static GotoExpression AsReturn(this LabelTarget target, Expression value)
         {
             return Expression.Return(target, value);
+        }
+
+        public static GotoExpression AsBreak(this LabelTarget target)
+        {
+            return Expression.Break(target);
         }
 
         public static LabelExpression AsExpression(this LabelTarget target, object value)
@@ -130,7 +145,12 @@ namespace ObjectCompare.Expressions
 
         public static UnaryExpression IsFalse(this Expression expression)
         {
-            return Expression.IsFalse(expression); 
+            return Expression.IsFalse(expression);
+        }
+
+        public static UnaryExpression IsTrue(this Expression expression)
+        {
+            return Expression.IsTrue(expression); 
         }
 
         public static UnaryExpression Not(this Expression expression)
