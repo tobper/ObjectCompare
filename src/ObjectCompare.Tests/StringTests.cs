@@ -6,7 +6,7 @@ namespace ObjectCompare.Tests
     public class StringTests
     {
         [TestMethod]
-        public void Matches_strings()
+        public void Matched_strings()
         {
             var r = ObjectComparer.Equals("x", "x");
 
