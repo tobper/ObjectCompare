@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>ObjectCompare</id>
+    <version>0.0</version>
+    <title>ObjectCompare</title>
+    <authors>Tobias Persson</authors>
+    <owners>Tobias Persson</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Recursive object comparer for .Net. Based on Portable Class Library for Net45, Windows Store apps and Windows Phone 8.</description>
+    <projectUrl>https://github.com/tobper/ObjectCompare</projectUrl>
+    <copyright>Copyright 2013 © Tobias Persson. All rights reserved.</copyright>
+    <tags></tags>
+  </metadata>
+  <files>
+    <file src="ObjectCompare.*" target="lib\portable-net45+windows8+windowsphone8" />
+  </files>
+</package>
