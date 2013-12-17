@@ -13,6 +13,7 @@
     <tags></tags>
   </metadata>
   <files>
-    <file src="ObjectCompare.*" target="lib\portable-net45+windows8+windowsphone8" />
+    <file src="temp\ObjectCompare\ObjectCompare.*" target="lib\portable-net45+windows8+windowsphone8" />
+    <file src="src\src\ObjectCompare\**\*.cs" target="src" />
   </files>
 </package>
