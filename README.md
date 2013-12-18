@@ -57,7 +57,7 @@ Recursive object comparer for .Net.
    ```
  
 
-1. IEquatable<T> check
+1. IEquatable&lt;T&gt; check
 
    Calls `Equals<T>(T other)` to determine if the objects are equal if the type implements `IEquatable<T>`.
 
