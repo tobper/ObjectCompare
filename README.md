@@ -47,7 +47,7 @@ Each object pair will be compared according to the following order of execution.
    ObjectComparer.Equals(x1, x2);
    ```
 
-   More complicated relationships will work the same way; x1.Y.X is the same object as x2.Y.X.Y.X.
+   More complicated relationships will work the same way; x1.Y.X is the same object as x2.X.Y.X.Y.X.
 
    ```c#
    var x1 = new X { Y = new Y() };
@@ -68,7 +68,7 @@ Each object pair will be compared according to the following order of execution.
 
 1. IEnumerable&lt;T&gt; check
 
-   Objects are equal if the type implements `IEnumerable<T>`, the enumerables are of the same length and all the items are equal.
+   Objects are equal if the type implements `IEbumerable<T>`, all the items are equal and the enumerables are of the same length.
 
 1. Member check
 
@@ -96,3 +96,7 @@ Each member pair will be compared from the top of this list.
 
   Specify true if IEquatable<T> should be used if types implements it.  
   Default values is true.
+
+### Contact
+
+Feel free to send a mail to objectcompare@ohnoes.eu with questions or comments.
