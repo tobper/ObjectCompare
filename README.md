@@ -20,7 +20,42 @@ Recursive object comparer for .Net.
 
 1. Visited objects check
 
-   *Todo*
+   Ensures that the object pair has not already been evaluated to prevent infinite loops which will lead to stack overflows.
+
+   ```c#
+   class X
+   {
+       public Y Y { get; set; }
+   }
+
+   class Y
+   {
+       public X X { get; set; }
+   }
+   ```
+
+   The following code will work because the combination of x1 and x2 has already been evaluated when x.Y.X is reached.  
+
+   ```c#
+   var x1 = new X { Y = new Y() };
+   var x2 = new X { Y = new Y() };
+   x1.Y.X = x1;
+   x2.Y.X = x2;
+
+   ObjectComparer.Equals(x1, x2);
+   ```
+
+   More complicated relationships will work the same way; x1.Y.X is the same object as x2.X.Y.X.Y.X.
+
+   ```c#
+   var x1 = new X { Y = new Y() };
+   var x2 = new X { Y = new Y { X = new X { Y = new Y() } } };
+   x1.Y.X = x1;
+   x2.Y.X.Y.X = x2;
+
+   ObjectComparer.Equals(x1, x2);
+   ```
+ 
 
 1. Member check
 
