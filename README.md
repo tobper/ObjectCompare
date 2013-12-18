@@ -3,6 +3,26 @@ ObjectCompare
 
 Recursive object comparer for .Net.
 
+### Usage
+
+```c#
+ObjectComparer.Equals(1, 2);
+```
+
+```c#
+var x = new { Name = "John" };
+var y = new { Name = "Jane" };
+
+ObjectComparer.Equals(x, y);
+```
+
+```c#
+var x = new[] { 1, 2 };
+var y = new[] { 2, 3 };
+
+ObjectComparer.Equals(x, y);
+```
+
 ### Order of execution
 
 Each object pair will be compared according to the following order of execution.
