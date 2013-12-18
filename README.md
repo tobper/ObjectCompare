@@ -5,18 +5,20 @@ Recursive object comparer for .Net.
 
 ### Order of execution
 
+Each object pair will be compared according to the following order of execution.
+
 1. Value type check
 
-   Performs an equal check (==) if the type is a value type.
+   Objects are equal if the type is a value type and an equal check (==) returns true;
 
 1. Null value check
 
-   Values are equal if both values are null.
-   Values are **not** equal if one of the values is null.
+   Objects are equal if both references are null.  
+   Objects are **not** equal if one of the references is null.
 
 1. ReferenceEquals check
 
-   Values are equal if Object.ReferenceEquals returns true.
+   Objects are equal if `Object.ReferenceEquals(x1, x2)` returns true.
 
 1. Visited objects check
 
@@ -45,7 +47,7 @@ Recursive object comparer for .Net.
    ObjectComparer.Equals(x1, x2);
    ```
 
-   More complicated relationships will work the same way; x1.Y.X is the same object as x2.X.Y.X.Y.X.
+   More complicated relationships will work the same way; x1.Y.X is the same object as x2.Y.X.Y.X.
 
    ```c#
    var x1 = new X { Y = new Y() };
@@ -58,21 +60,20 @@ Recursive object comparer for .Net.
 
 1. IEquatable&lt;T&gt; check
 
-   Calls `Equals<T>(T other)` to determine if the objects are equal if the type implements `IEquatable<T>`.
+   Objects are equal if the type implements `IEquatable<T>` and `x1.Equals(x2)` returns true.
 
 1. ICollection&lt;T&gt; check
 
-   Compares the `Count` of collections if the type implements `ICollection<T>`.  
-   Continues to `IEnumerable<T>` check afterwards. 
+   Objects are not equal if the type implements `ICollection<T>` and `x1.Count != x2.Count`.  
 
 1. IEnumerable&lt;T&gt; check
 
-   Compares each value of the two enumerables if the type implements `IEnumerable<T>`.  
-Check fails if the enumerables are of different length or if any item is different.
+   Objects are equal if the type implements `IEnumerable<T>`, the enumerables are of the same length and all the items are equal.
 
 1. Member check
 
-   Compares public properties, protected properties and private fields according to specified [settings](#settings).
+   Compares public properties, protected properties and private fields according to specified [settings](#settings).  
+Each member pair will be compared from the top of this list. 
 
 ### Settings
 
