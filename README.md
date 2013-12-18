@@ -57,6 +57,10 @@ Recursive object comparer for .Net.
    ```
  
 
+1. IEquatable<T> check
+
+   Calls `Equals<T>(T other)` to determine if the objects are equal if the type implements `IEquatable<T>`.
+
 1. Member check
 
    Compares public properties, protected properties and private fields according to specified [settings](#settings).
