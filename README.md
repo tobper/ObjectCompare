@@ -55,11 +55,20 @@ Recursive object comparer for .Net.
 
    ObjectComparer.Equals(x1, x2);
    ```
- 
 
 1. IEquatable&lt;T&gt; check
 
    Calls `Equals<T>(T other)` to determine if the objects are equal if the type implements `IEquatable<T>`.
+
+1. ICollection&lt;T&gt; check
+
+   Compares the `Count` of collections if the type implements `ICollection<T>`.  
+   Continues to `IEnumerable<T>` check afterwards. 
+
+1. IEnumerable&lt;T&gt; check
+
+   Compares each value of the two enumerables if the type implements `IEnumerable<T>`.  
+Check fails if the enumerables are of different length or if any item is different.
 
 1. Member check
 
